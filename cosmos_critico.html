@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cosmos Crítico — Pensamiento y Exploración en la Era Espacial</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0b14;
+    --deep: #060810;
+    --gold: #c8a84b;
+    --gold-light: #e2c97e;
+    --gold-dim: #7a6230;
+    --nebula-blue: #1a2a5e;
+    --nebula-purple: #2d1b4e;
+    --star-white: #f0eee8;
+    --text-body: #ccc8be;
+    --text-dim: #8a8577;
+    --accent-red: #c0392b;
+    --tab-active: #c8a84b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--deep);
+    color: var(--text-body);
+    font-family: 'Libre Baskerville', Georgia, serif;
+    overflow-x: hidden;
+  }
+
+  /* ── STAR CANVAS ── */
+  #starfield {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── MASTHEAD ── */
+  .masthead {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 60px 20px 30px;
+    border-bottom: 1px solid var(--gold-dim);
+    background: linear-gradient(180deg, rgba(6,8,16,0.95) 0%, rgba(26,42,94,0.3) 100%);
+  }
+
+  .masthead-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+
+  .masthead-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 9vw, 7.5rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 0.9;
+    color: var(--star-white);
+    text-shadow: 0 0 60px rgba(200,168,75,0.3);
+    margin-bottom: 8px;
+  }
+
+  .masthead-title em {
+    display: block;
+    font-style: italic;
+    color: var(--gold);
+    font-size: 0.55em;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+  }
+
+  .masthead-rule {
+    width: 80px;
+    height: 2px;
+    background: var(--gold);
+    margin: 22px auto;
+  }
+
+  .masthead-tagline {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  /* ── NAV TABS ── */
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(6,8,16,0.97);
+    border-bottom: 1px solid var(--gold-dim);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-inner {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    max-width: 1100px;
+    margin: 0 auto;
+    overflow-x: auto;
+  }
+
+  .nav-tab {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 18px 28px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.25s;
+    white-space: nowrap;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  .nav-tab:hover { color: var(--gold-light); }
+
+  .nav-tab.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    display: none;
+    position: relative;
+    z-index: 10;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 70px 30px;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SECTION HEADERS ── */
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.35em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .section-label::before,
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gold-dim);
+    max-width: 60px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 900;
+    color: var(--star-white);
+    line-height: 1.05;
+    margin-bottom: 10px;
+  }
+
+  .section-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  /* ── HERO SECTION ── */
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    margin-top: 50px;
+    align-items: start;
+  }
+
+  @media (max-width: 700px) {
+    .hero-grid { grid-template-columns: 1fr; }
+  }
+
+  .hero-card {
+    background: linear-gradient(135deg, rgba(26,42,94,0.25) 0%, rgba(45,27,78,0.2) 100%);
+    border: 1px solid rgba(200,168,75,0.2);
+    border-radius: 2px;
+    padding: 35px 30px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .hero-card:hover {
+    border-color: var(--gold);
+    background: linear-gradient(135deg, rgba(26,42,94,0.4) 0%, rgba(45,27,78,0.35) 100%);
+    transform: translateY(-3px);
+  }
+
+  .hero-card-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .hero-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--star-white);
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+
+  .hero-card-excerpt {
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: var(--text-dim);
+  }
+
+  .hero-card-meta {
+    margin-top: 18px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--gold-dim);
+  }
+
+  /* ── EDITORIAL STATEMENT ── */
+  .editorial-block {
+    margin-top: 60px;
+    border-left: 3px solid var(--gold);
+    padding: 28px 35px;
+    background: rgba(200,168,75,0.05);
+  }
+
+  .editorial-block p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    line-height: 1.8;
+    color: var(--text-body);
+  }
+
+  .editorial-block cite {
+    display: block;
+    margin-top: 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    color: var(--gold-dim);
+    font-style: normal;
+  }
+
+  /* ── ARTICLE LAYOUT ── */
+  .article-header {
+    border-bottom: 1px solid rgba(200,168,75,0.25);
+    padding-bottom: 35px;
+    margin-bottom: 45px;
+  }
+
+  .article-kicker {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .article-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.9rem, 4vw, 3rem);
+    font-weight: 900;
+    color: var(--star-white);
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .article-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+
+  .article-byline {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    color: var(--gold-dim);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .article-byline span { display: flex; align-items: center; gap: 6px; }
+
+  /* ── BODY TEXT ── */
+  .article-body {
+    columns: 2;
+    column-gap: 50px;
+    font-size: 0.96rem;
+    line-height: 1.85;
+    color: var(--text-body);
+  }
+
+  @media (max-width: 700px) { .article-body { columns: 1; } }
+
+  .article-body p {
+    margin-bottom: 1.2em;
+    break-inside: avoid;
+  }
+
+  .article-body p:first-child::first-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.5em;
+    font-weight: 900;
+    float: left;
+    line-height: 0.8;
+    margin: 0.05em 0.1em 0 0;
+    color: var(--gold);
+  }
+
+  /* ── PULL QUOTE ── */
+  .pull-quote {
+    column-span: all;
+    text-align: center;
+    padding: 40px 20px;
+    margin: 30px 0;
+    border-top: 1px solid var(--gold-dim);
+    border-bottom: 1px solid var(--gold-dim);
+    break-inside: avoid;
+  }
+
+  .pull-quote p {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.2rem, 3vw, 1.7rem);
+    font-style: italic;
+    color: var(--gold-light);
+    line-height: 1.4;
+    margin: 0 !important;
+  }
+
+  .pull-quote p::first-letter { all: unset; }
+
+  /* ── SUBHEADING ── */
+  .article-subhead {
+    column-span: all;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--star-white);
+    border-left: 3px solid var(--gold);
+    padding-left: 16px;
+    margin: 30px 0 20px;
+    break-inside: avoid;
+  }
+
+  /* ── OPINION LAYOUT ── */
+  .opinion-hero {
+    background: linear-gradient(135deg, rgba(45,27,78,0.4) 0%, rgba(26,42,94,0.3) 100%);
+    border: 1px solid rgba(200,168,75,0.2);
+    padding: 50px 50px 40px;
+    margin-bottom: 50px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .opinion-hero::before {
+    content: '"';
+    font-family: 'Playfair Display', serif;
+    font-size: 20rem;
+    font-weight: 900;
+    color: rgba(200,168,75,0.06);
+    position: absolute;
+    top: -40px;
+    left: 10px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .opinion-standfirst {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-style: italic;
+    line-height: 1.7;
+    color: var(--gold-light);
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .opinion-body {
+    font-size: 0.96rem;
+    line-height: 1.9;
+  }
+
+  .opinion-body p { margin-bottom: 1.3em; }
+
+  .opinion-body p:first-child::first-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.5em;
+    font-weight: 900;
+    float: left;
+    line-height: 0.8;
+    margin: 0.05em 0.1em 0 0;
+    color: var(--gold);
+  }
+
+  .argument-number {
+    display: inline-block;
+    width: 28px; height: 28px;
+    background: var(--gold);
+    color: var(--deep);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 50%;
+    margin-right: 10px;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+
+  .argument-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    margin-bottom: 1.3em;
+  }
+
+  /* ── RECURSOS ── */
+  .resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 28px;
+    margin-top: 40px;
+  }
+
+  .resource-card {
+    background: linear-gradient(135deg, rgba(26,42,94,0.3) 0%, rgba(10,11,20,0.8) 100%);
+    border: 1px solid rgba(200,168,75,0.2);
+    border-radius: 2px;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .resource-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(200,168,75,0.1);
+  }
+
+  .resource-thumb {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(30%) brightness(0.8);
+    transition: filter 0.3s;
+  }
+
+  .resource-card:hover .resource-thumb { filter: grayscale(0%) brightness(1); }
+
+  .resource-thumb-placeholder {
+    width: 100%; height: 160px;
+    background: linear-gradient(135deg, var(--nebula-blue), var(--nebula-purple));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem;
+  }
+
+  .resource-body { padding: 20px; }
+
+  .resource-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .resource-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--star-white);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .resource-desc {
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--text-dim);
+  }
+
+  .resource-link {
+    display: inline-block;
+    margin-top: 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+    border-bottom: 1px solid var(--gold-dim);
+    padding-bottom: 2px;
+    transition: all 0.2s;
+  }
+
+  .resource-link:hover { color: var(--gold-light); border-color: var(--gold-light); }
+
+  /* ── VIDEO EMBED ── */
+  .video-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    border: 1px solid rgba(200,168,75,0.2);
+  }
+
+  .video-wrapper iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border: none;
+  }
+
+  /* ── FOOTER ── */
+  .site-footer {
+    position: relative;
+    z-index: 10;
+    border-top: 1px solid var(--gold-dim);
+    padding: 40px 30px;
+    text-align: center;
+    background: rgba(6,8,16,0.9);
+  }
+
+  .footer-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .footer-meta {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .footer-info {
+    margin-top: 20px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--deep); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
+
+  /* ── COSMOS DECORATION ── */
+  .cosmos-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 50px 0;
+    color: var(--gold-dim);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+  }
+
+  .cosmos-divider::before, .cosmos-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  }
+
+  .badge {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--deep);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    margin-bottom: 14px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Star field canvas -->
+<canvas id="starfield"></canvas>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <p class="masthead-eyebrow">Revista Digital de Pensamiento Crítico · Colegio Bautista · 2026</p>
+  <h1 class="masthead-title">
+    Cosmos Crítico
+    <em>El capital y las estrellas</em>
+  </h1>
+  <div class="masthead-rule"></div>
+  <p class="masthead-tagline">Escritura · Argumentación · Pensamiento crítico en la era espacial</p>
+</header>
+
+<!-- NAV -->
+<nav class="nav-bar">
+  <div class="nav-inner">
+    <button class="nav-tab active" onclick="showSection('inicio')">Inicio</button>
+    <button class="nav-tab" onclick="showSection('critica')">Crítica Literaria</button>
+    <button class="nav-tab" onclick="showSection('columna')">Columna de Opinión</button>
+    <button class="nav-tab" onclick="showSection('recursos')">Recursos Audiovisuales</button>
+  </div>
+</nav>
+
+<!-- ════════════════════ INICIO ════════════════════ -->
+<section class="section active" id="inicio">
+
+  <div class="section-label">Línea editorial</div>
+  <h2 class="section-title">¿A quién pertenece <em>el cosmos?</em></h2>
+
+  <div class="hero-grid">
+    <div class="hero-card" onclick="showSection('critica')">
+      <p class="hero-card-tag">📽 Crítica Literaria / Cultural</p>
+      <h3 class="hero-card-title">El Cosmos Como Mercancía: Capital, Monopolio y Supervivencia en Interestelar</h3>
+      <p class="hero-card-excerpt">Una lectura ideológica de la obra de Christopher Nolan: ¿la película normaliza el monopolio corporativo sobre el destino de la humanidad?</p>
+      <p class="hero-card-meta">— Martín Alarcón Aguilera · Ing. Aeronáutico / M. Astrofísica · 15/05/2026</p>
+    </div>
+
+    <div class="hero-card" onclick="showSection('columna')">
+      <p class="hero-card-tag">✍ Columna de Opinión</p>
+      <h3 class="hero-card-title">¿El Cosmos o el Capital? La Ambición Humana en la Nueva Era Espacial</h3>
+      <p class="hero-card-excerpt">La exploración del espacio ya no está en manos del Estado. ¿Podremos hacer de la tecnología un puente hacia el conocimiento o una herramienta para el colonialismo corporativo?</p>
+      <p class="hero-card-meta">— Martín Alarcón Aguilera · Ing. Aeronáutico / M. Astrofísica · 05/05/2026</p>
+    </div>
+  </div>
+
+  <div class="editorial-block">
+    <p>Esta revista digital nace del convencimiento de que la ciencia ficción es también un documento político. Leer las estrellas —en la pantalla o en el cielo— exige la misma herramienta: el pensamiento crítico. <em>Cosmos Crítico</em> es ese ejercicio: mirar hacia arriba sin dejar de mirar alrededor.</p>
+    <cite>— Línea editorial · Cosmos Crítico · 2026</cite>
+  </div>
+
+  <div class="cosmos-divider">✦ ✦ ✦</div>
+
+  <div class="section-label">Sobre este proyecto</div>
+  <p style="font-size:0.92rem; line-height:1.85; color:var(--text-dim); max-width:700px; margin-top:16px;">
+    <em>Cosmos Crítico</em> es una página web editorial producida en el marco de la asignatura <strong style="color:var(--text-body)">Participación y Argumentación en Democracia</strong>, Colegio Bautista, Temuco. Contiene crítica literaria/cultural, columna de opinión, recursos audiovisuales seleccionados y material de profundización sobre la relación entre economía, ética y exploración espacial.
+  </p>
+
+</section>
+
+<!-- ════════════════════ CRÍTICA ════════════════════ -->
+<section class="section" id="critica">
+
+  <div class="article-header">
+    <p class="article-kicker">Crítica Cultural · Cine · Ciencia Ficción</p>
+    <span class="badge">Crítica Literaria</span>
+    <h2 class="article-title">El Cosmos Como Mercancía: Capital, Monopolio y Supervivencia en <em>Interestelar</em></h2>
+    <p class="article-subtitle">Christopher Nolan construye un universo emocionalmente poderoso que, bajo la superficie, naturaliza el capitalismo espacial y el monopolio corporativo sobre el destino humano.</p>
+    <div class="article-byline">
+      <span>✍ Martín Alarcón Aguilera</span>
+      <span>📐 Ing. Aeronáutico · M. Astrofísica</span>
+      <span>📅 15 de mayo de 2026</span>
+    </div>
+  </div>
+
+  <div class="article-body">
+    <p>
+      Interestelar (2014), dirigida por Christopher Nolan y producida por Paramount Pictures y Warner Bros., es una película de ciencia ficción que transcurre en un futuro cercano donde la Tierra agoniza bajo una devastadora crisis alimentaria provocada por el colapso de los ecosistemas agrícolas. La humanidad, reducida a una civilización de agricultores, enfrenta su extinción. En este contexto, Cooper (Matthew McConaughey), un ex piloto de la NASA convertido en granjero, descubre de manera fortuita las coordenadas de una instalación secreta donde un reducido grupo de científicos liderados por el Dr. Brand (Michael Caine) trabajan en secreto bajo los auspicios de una NASA desfinanciada y operando en la clandestinidad.
+    </p>
+    <p>
+      El plan consiste en enviar una tripulación a través de un agujero de gusano, localizado cerca de Saturno, para explorar sistemas estelares candidatos a albergar vida humana. La película destaca por su rigor científico en la representación de agujeros negros y relatividad temporal, así como por su exploración emocional del amor como una fuerza que trasciende el espacio-tiempo. Sin embargo, bajo su impresionante narrativa visual, la película construye un universo económico y corporativo que merece un análisis crítico profundo.
+    </p>
+
+    <div class="pull-quote">
+      <p>«La película naturaliza la privatización del esfuerzo colectivo de la humanidad, reproduciendo el esquema monopolístico que hoy encarnan SpaceX, Blue Origin y Boeing.»</p>
+    </div>
+
+    <p>
+      Interestelar, más allá de ser un espectáculo científico y emocional, opera como una metáfora del capitalismo espacial contemporáneo: presenta a una entidad única y opaca como la única salvadora posible, borrando deliberadamente las preguntas sobre el origen del capital, la claridad democrática de quienes deciden el destino de la especie y la ausencia total de competencia, cooperación internacional o transparencia institucional.
+    </p>
+
+    <div class="article-subhead">I. El dinero invisible: financiamiento sin origen ni rendición de cuentas</div>
+
+    <p>
+      Uno de los vacíos narrativos más reveladores de Interestelar es la completa ausencia de explicación sobre cómo se financia la misión. La NASA opera en secreto, sin presupuesto federal visible. ¿De dónde provienen los recursos para construir el Endurance, desarrollar tecnología de propulsión gravitacional o mantener durante décadas una instalación subterránea de alta complejidad? La película no lo dice, y esa omisión es ideológicamente significativa: sugiere que el dinero es un detalle técnico irrelevante cuando se trata de «salvar a la humanidad».
+    </p>
+    <p>
+      Esta lógica es idéntica a la que utilizan los magnates del sector aeroespacial privado en la realidad. Elon Musk construyó SpaceX presentando siempre la empresa como una misión altruista de preservación de la especie, mientras acumulaba contratos gubernamentales millonarios. Entre 2000 y 2023, SpaceX recibió más de 15 mil millones de dólares en contratos de la NASA y el Departamento de Defensa de EE.UU. La película, al invisibilizar el dinero, romantiza exactamente este modelo.
+    </p>
+
+    <div class="article-subhead">II. Monopolio del destino: una sola empresa, una sola solución</div>
+
+    <p>
+      En el universo de Interestelar no existe la ESA europea, la Roscosmos rusa, la CNSA china ni ninguna otra agencia espacial con capacidad de respuesta. La NASA clandestina actúa como el único actor capaz de gestionar la supervivencia humana, y esta concentración de poder no es cuestionada en ningún momento por la narrativa.
+    </p>
+    <p>
+      Esta estructura monopolística refleja con precisión inquietante lo que ocurre en la industria aeroespacial real: SpaceX domina más del 60% de los lanzamientos orbitales comerciales a nivel mundial. Su competidor más cercano en cohetes reutilizables, Blue Origin de Jeff Bezos, lleva años de retraso en sus programas clave. Cuando la película presenta a un solo equipo como los únicos capaces de salvar a la especie, normaliza la idea de que la concentración del poder tecnológico y financiero en pocas manos es no solo aceptable, sino deseable.
+    </p>
+
+    <div class="article-subhead">III. La debilidad central: el elitismo de la salvación</div>
+
+    <p>
+      La mayor debilidad ética de Interestelar reside en quién decide quién se salva. El Plan A —salvar a toda la humanidad— y el Plan B —colonizar con embriones seleccionados— son elaborados por un puñado de científicos de élite sin ningún proceso democrático, deliberativo ni participativo. Los miles de millones de personas que mueren en la Tierra no tienen voz ni representación en las decisiones que determinan su destino.
+    </p>
+    <p>
+      Esta lógica es el corazón del pensamiento tecno-feudal que caracteriza a los grandes actores corporativos del sector espacial contemporáneo. La Artemis Act firmada en 2020 establece normas de explotación de recursos espaciales diseñadas fundamentalmente a medida de empresas privadas estadounidenses, ignorando a los países del Sur Global. En la película, esta debilidad es presentada como inevitable y casi noble. En la realidad, esa misma narrativa sirve para que corporaciones tomen decisiones que afectarán a toda la humanidad sin ningún mecanismo de control ciudadano.
+    </p>
+
+    <div class="pull-quote">
+      <p>«El verdadero peligro no está en las estrellas hacia las que viaja Cooper: está en que dejemos de hacer las preguntas que la película tan elegantemente evita responder.»</p>
+    </div>
+
+    <p>
+      Interestelar es, en términos cinematográficos, una obra maestra de la ciencia ficción: rigurosa, emocionalmente intensa y visualmente extraordinaria. Sin embargo, como objeto cultural, constituye un documento ideológico que merece ser leído con ojos críticos. Al invisibilizar el origen del capital que financia la misión, al naturalizar el monopolio de una sola entidad sobre el destino de la especie y al presentar el elitismo científico como la única forma posible de salvación, la película reproduce los mismos patrones de concentración de poder que hoy caracterizan a las corporaciones del sector aeroespacial privado.
+    </p>
+    <p>
+      SpaceX, Blue Origin, Boeing y sus pares no son héroes altruistas que salvarán a la humanidad: son actores económicos con intereses concretos, financiados en parte por dinero público, que operan con escasa supervisión democrática en un sector que definirá el futuro de nuestra civilización. Interestelar no inventa este modelo, pero lo hace deseable y romantizable.
+    </p>
+  </div>
+
+</section>
+
+<!-- ════════════════════ COLUMNA ════════════════════ -->
+<section class="section" id="columna">
+
+  <div class="article-header">
+    <p class="article-kicker">Columna de Opinión · Política Espacial · Economía</p>
+    <span class="badge">Columna de Opinión</span>
+    <h2 class="article-title">¿El Cosmos o el Capital? <em>La Ambición Humana en la Nueva Era Espacial</em></h2>
+    <div class="article-byline">
+      <span>✍ Martín Alarcón Aguilera</span>
+      <span>📐 Ing. Aeronáutico · M. Astrofísica</span>
+      <span>📅 05 de mayo de 2026</span>
+    </div>
+  </div>
+
+  <div class="opinion-hero">
+    <p class="opinion-standfirst">
+      La exploración del espacio ya no está en manos exclusivas del Estado. Hoy forma parte de un ecosistema híbrido donde la rentabilidad empresarial puede desplazar a la ética científica. ¿Podremos hacer de la tecnología un puente hacia el conocimiento, o será simplemente una herramienta para un nuevo tipo de colonialismo corporativo?
+    </p>
+  </div>
+
+  <div class="opinion-body">
+    <p>
+      La exploración del espacio ya no está en manos exclusivas del Estado; ahora forma parte de un ecosistema híbrido. Antes, la NASA se encargaba de administrar el conocimiento como un bien público, pero hoy en día depende de ciertas empresas privadas para llevar a cabo sus proyectos. Esta colaboración entre el sector público y privado permite que el Estado defina la dirección científica mientras compañías como SpaceX, Boeing, Blue Origin, Northrop Grumman y Lockheed Martin ofrecen la infraestructura o materiales necesarios. Esta transición no es solo técnica, sino también económica, marcando el comienzo de una era en la que el espacio se ve como un mercado en expansión para la ambición humana.
+    </p>
+
+    <p>
+      A pesar de los beneficios que prometen estas asociaciones, la actual carrera espacial —impulsada por la inteligencia artificial y nuevos modelos comerciales— corre el riesgo de poner la rentabilidad empresarial por encima de la ética científica. El elevado costo de desarrollar tecnología espacial ha llevado a una dependencia del sector privado que, sin una regulación adecuada, podría convertir el espacio en un terreno de monopolio y codicia. La complejidad técnica y los intereses comerciales están desviando el verdadero propósito del avance y la exploración humana.
+    </p>
+
+    <div class="cosmos-divider">Argumentos</div>
+
+    <div class="argument-row">
+      <span class="argument-number">1</span>
+      <p style="margin:0"><strong style="color:var(--star-white)">Los modelos de negocio y los enormes costos de inversión.</strong> Desarrollar naves como la Starship de SpaceX o el sistema Starliner de Boeing requiere miles de millones de dólares, lo que obliga a estas empresas a buscar retornos rápidos, como el turismo espacial o la explotación de recursos. Esta necesidad crea una contradicción: mientras la ciencia busca compartir descubrimientos, el enfoque privado tiende a patentarlos. La ambición de dominar el mercado estelar está generando una brecha donde solo quienes tienen el capital pueden decidir el futuro de la humanidad fuera de la Tierra.</p>
+    </div>
+
+    <div class="argument-row">
+      <span class="argument-number">2</span>
+      <p style="margin:0"><strong style="color:var(--star-white)">La complejidad técnica sin precedentes en las grandes misiones.</strong> Proyectos liderados por Northrop Grumman, como el telescopio James Webb, o por Lockheed Martin con la cápsula Orion, muestran que los desafíos de integrar sistemas son enormes. Un error pequeño en el ensamblaje de componentes de diferentes empresas podría arruinar años de esfuerzo. Esta fragmentación tecnológica, en manos de múltiples proveedores privados, hace que la transparencia sea un desafío y puede aumentar el riesgo de que la seguridad se sacrifique para cumplir plazos comerciales.</p>
+    </div>
+
+    <div class="argument-row">
+      <span class="argument-number">3</span>
+      <p style="margin:0"><strong style="color:var(--star-white)">La inteligencia artificial como herramienta de poder.</strong> Empresas como Blue Origin están utilizando IA para automatizar infraestructuras en la Luna, facilitando la idea de trasladar industrias pesadas fuera del planeta. Sin embargo, la integración de sistemas autónomos bajo control privado plantea una pregunta importante: ¿Quién se hace cargo de los algoritmos que decidirán la logística en el espacio? La IA acelera la carrera, pero si solo se usa para satisfacer la avaricia de unos pocos, la tecnología se convierte en un obstáculo para el acceso igualitario al cosmos.</p>
+    </div>
+
+    <div class="argument-row">
+      <span class="argument-number">4</span>
+      <p style="margin:0"><strong style="color:var(--star-white)">La ausencia de regulación democrática internacional.</strong> Sin marcos legales vinculantes que garanticen la equidad en el acceso y la explotación de recursos espaciales, el espacio podría convertirse en una extensión de las desigualdades terrestres. El Tratado del Espacio Exterior de 1967 prohíbe la soberanía nacional sobre cuerpos celestes, pero no contempla el dominio corporativo. Esta laguna legal es aprovechada por empresas que operan sin rendir cuentas a ninguna comunidad afectada.</p>
+    </div>
+
+    <div class="pull-quote">
+      <p>«Si dejamos que el modelo comercial establezca las reglas, el espacio no se convertirá en un nuevo comienzo, sino en un reflejo de nuestras desigualdades terrestres.»</p>
+    </div>
+
+    <p>
+      En resumen, la carrera espacial actual refleja nuestras propias ambiciones: capaz de logros técnicos impresionantes, pero también vulnerable a la codicia. Colaborar con gigantes como Lockheed Martin o SpaceX es necesario por los altos costos de avanzar, pero no podemos permitir que eso deshumanice nuestra exploración. Si dejamos que el modelo comercial y la integración oscura de sistemas establezcan las reglas, el espacio no se convertirá en un nuevo comienzo, sino en un reflejo de nuestras desigualdades terrestres.
+    </p>
+    <p>
+      ¿Podremos hacer de la tecnología un puente hacia el conocimiento, o será simplemente una herramienta más para un nuevo tipo de colonialismo corporativo?
+    </p>
+  </div>
+
+</section>
+
+<!-- ════════════════════ RECURSOS ════════════════════ -->
+<section class="section" id="recursos">
+
+  <div class="section-label">Material complementario</div>
+  <h2 class="section-title">Recursos <em>Audiovisuales</em></h2>
+  <p style="font-size:0.9rem; color:var(--text-dim); margin-top:12px; max-width:600px; line-height:1.7;">
+    Selección de documentales, conferencias y videos educativos que complementan y profundizan los temas abordados en esta revista: la economía espacial, el pensamiento crítico ante la ciencia ficción y el debate sobre la privatización del cosmos.
+  </p>
+
+  <div class="resources-grid">
+
+    <div class="resource-card">
+      <div class="resource-thumb-placeholder">🎬</div>
+      <div class="resource-body">
+        <p class="resource-tag">Documental · Netflix</p>
+        <h3 class="resource-title">Return to Space (2022)</h3>
+        <p class="resource-desc">Documental que sigue a SpaceX y Elon Musk en el proceso de enviar astronautas de la NASA al espacio. Muestra la tensión entre visión corporativa y misión científica.</p>
+        <a href="https://www.netflix.com/title/81111691" target="_blank" class="resource-link">Ver en Netflix →</a>
+      </div>
+    </div>
+
+    <div class="resource-card">
+      <div class="resource-thumb-placeholder">🔭</div>
+      <div class="resource-body">
+        <p class="resource-tag">Conferencia · TED</p>
+        <h3 class="resource-title">The economic case for letting people immigrate — and go to space (Michio Kaku)</h3>
+        <p class="resource-desc">El físico Michio Kaku expone los argumentos económicos y civilizatorios detrás de la exploración espacial, cuestionando quién debe beneficiarse de ella.</p>
+        <a href="https://www.ted.com/talks" target="_blank" class="resource-link">Ver en TED.com →</a>
+      </div>
+    </div>
+
+    <div class="resource-card">
+      <div class="resource-thumb-placeholder">🚀</div>
+      <div class="resource-body">
+        <p class="resource-tag">Documental · YouTube</p>
+        <h3 class="resource-title">The Billion Dollar Bet: Private Space Race (DW Documentary)</h3>
+        <p class="resource-desc">Análisis periodístico riguroso sobre la carrera espacial privada, los contratos con la NASA y el poder que acumulan SpaceX, Blue Origin y Virgin Galactic.</p>
+        <a href="https://www.youtube.com/@DWDocumentary" target="_blank" class="resource-link">Ver en YouTube →</a>
+      </div>
+    </div>
+
+    <div class="resource-card">
+      <div class="resource-thumb-placeholder">🌌</div>
+      <div class="resource-body">
+        <p class="resource-tag">Análisis · YouTube</p>
+        <h3 class="resource-title">The Science of Interstellar (Kip Thorne)</h3>
+        <p class="resource-desc">El astrofísico Kip Thorne —asesor científico de Nolan— explica los fundamentos reales detrás de la película: agujeros negros, relatividad y viajes a través del espacio-tiempo.</p>
+        <a href="https://www.youtube.com/results?search_query=kip+thorne+interstellar+science" target="_blank" class="resource-link">Buscar en YouTube →</a>
+      </div>
+    </div>
+
+    <div class="resource-card">
+      <div class="resource-thumb-placeholder">💡</div>
+      <div class="resource-body">
+        <p class="resource-tag">Ensayo visual · YouTube</p>
+        <h3 class="resource-title">Who Owns Space? — Kurzgesagt</h3>
+        <p class="resource-desc">Animación educativa que explora los marcos legales y éticos del espacio: ¿puede una empresa apropiarse de la Luna? ¿Quién regula el cosmos? Una introducción accesible y crítica.</p>
+        <a href="https://www.youtube.com/results?search_query=who+owns+space+kurzgesagt" target="_blank" class="resource-link">Ver en YouTube →</a>
+      </div>
+    </div>
+
+    <div class="resource-card">
+      <div class="resource-thumb-placeholder">📡</div>
+      <div class="resource-body">
+        <p class="resource-tag">Documental · PBS Space Time</p>
+        <h3 class="resource-title">Is SpaceX's Starship Actually Changing Everything?</h3>
+        <p class="resource-desc">Análisis técnico y político del impacto de Starship en la geopolítica espacial. ¿Representa el inicio de una era de exploración democrática o la consolidación de un monopolio?</p>
+        <a href="https://www.youtube.com/@pbsspacetime" target="_blank" class="resource-link">Ver canal PBS Space Time →</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="cosmos-divider" style="margin-top:60px;">Recurso destacado</div>
+
+  <div class="resource-card" style="max-width:700px; margin:0 auto;">
+    <div class="resource-body" style="padding:30px;">
+      <p class="resource-tag">📰 Lectura crítica recomendada</p>
+      <h3 class="resource-title" style="font-size:1.15rem;">«The Billionaire Space Race is a Waste» — The Atlantic</h3>
+      <p class="resource-desc" style="font-size:0.88rem; line-height:1.75;">
+        Artículo periodístico que examina si la carrera espacial privada realmente beneficia a la humanidad o si se trata, fundamentalmente, de un proyecto de ego financiado con capital concentrado. Complementa directamente los argumentos de la columna de opinión y la crítica de Interestelar incluidas en esta revista.
+      </p>
+      <a href="https://www.theatlantic.com/science/archive/2021/07/bezos-space-tourist-flight/619421/" target="_blank" class="resource-link">Leer artículo →</a>
+    </div>
+  </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-title">Cosmos Crítico</div>
+  <p class="footer-meta">Participación y Argumentación en Democracia · 3° y 4° Medios · Colegio Bautista, Temuco</p>
+  <p class="footer-info">
+    Profesoras: Camila Lagos · Johana Godoy<br>
+    Autor: Martín Alarcón Aguilera · Ingeniero Aeronáutico / Máster en Astrofísica<br>
+    Puntaje ideal: 81 puntos
+  </p>
+</footer>
+
+<script>
+// ── TABS ──
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const tabs = ['inicio','critica','columna','recursos'];
+  document.querySelectorAll('.nav-tab')[tabs.indexOf(id)].classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── STARFIELD ──
+(function() {
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  let W, H;
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function initStars(n) {
+    stars = [];
+    for (let i = 0; i < n; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.4 + 0.2,
+        a: Math.random(),
+        da: (Math.random() - 0.5) * 0.003,
+        speed: Math.random() * 0.04 + 0.005,
+        color: Math.random() > 0.85 ? '#c8a84b' : '#f0eee8'
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    stars.forEach(s => {
+      s.a = Math.max(0.05, Math.min(1, s.a + s.da));
+      if (s.a <= 0.05 || s.a >= 1) s.da *= -1;
+      s.y -= s.speed;
+      if (s.y < 0) { s.y = H; s.x = Math.random() * W; }
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = s.color;
+      ctx.globalAlpha = s.a * 0.7;
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  initStars(280);
+  window.addEventListener('resize', () => { resize(); initStars(280); });
+  draw();
+})();
+</script>
+</body>
+</html>
